@@ -1,0 +1,70 @@
+allprojects {
+    apply plugin: 'maven'
+  	apply plugin: 'eclipse'
+  	apply plugin: 'eclipse-wtp'
+  	apply plugin: 'jacoco'
+
+    version = '1.0.0'
+
+    jacoco {
+        toolVersion = '0.8.5'
+    }
+
+  wrapper {
+  gradleVersion = '4.9'
+ }
+  
+  repositories {
+		maven {
+		    mavenLocal()
+        }
+    }
+}
+
+subprojects {
+  apply plugin: 'java'
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+
+
+jacocoTestReport {
+        reports {
+            html.enabled = true
+            xml.enabled = true
+        }
+    }
+}
+
+task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+    dependsOn = subprojects.test
+    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(subprojects.sourceSets.main.output)
+    executionData = files(subprojects.jacocoTestReport.executionData)
+    reports {
+        html.enabled = true
+        xml.enabled = true
+        csv.enabled = false
+    }
+    onlyIf = {
+        true
+    }
+    doFirst {
+        executionData = files(executionData.findAll {
+            it.exists()
+        })
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
